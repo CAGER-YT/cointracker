@@ -20,6 +20,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Height } from "@mui/icons-material";
+import api from "../api"; 
 
 function AddCoinForm() {
   const [date, setDate] = useState(new Date());
@@ -35,8 +36,8 @@ function AddCoinForm() {
   }, []);
 
   const fetchCheckIns = () => {
-    axios
-      .get("http://localhost:8080/api/coins")
+    api
+      .get(`/api/coins`)
       .then((response) => setCheckIns(response.data))
       .catch((error) => console.error("Error fetching check-ins:", error));
   };
@@ -61,8 +62,8 @@ function AddCoinForm() {
     const existingCheckIn = checkIns.find((item) => item.date === formattedDate);
 
     if (existingCheckIn) {
-      axios
-        .put(`http://localhost:8080/api/coins/${existingCheckIn.id}`, { date: formattedDate, coins })
+      api
+        .put(`/api/coins/${existingCheckIn.id}`, { date: formattedDate, coins })
         .then(() => {
           setSnackbarOpen(true);
           fetchCheckIns();
@@ -70,8 +71,8 @@ function AddCoinForm() {
         .catch((error) => console.error("Error updating check-in:", error));
       setUpdateDialogOpen(false);
     } else {
-      axios
-        .post("http://localhost:8080/api/coins", { date: formattedDate, coins })
+      api
+        .post("/api/coins", { date: formattedDate, coins })
         .then(() => {
           setSnackbarOpen(true);
           fetchCheckIns();
@@ -191,135 +192,3 @@ function AddCoinForm() {
 }
 
 export default AddCoinForm;
-
-
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import {
-//   Container,
-//   Typography,
-//   Paper,
-//   Snackbar,
-//   Alert,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogActions,
-//   TextField,
-//   Button,
-// } from "@mui/material";
-// import Calendar from "react-calendar";
-// import "react-calendar/dist/Calendar.css";
-
-// function AddCoinForm() {
-//   const [date, setDate] = useState(new Date());
-//   const [snackbarOpen, setSnackbarOpen] = useState(false);
-//   const [checkIns, setCheckIns] = useState([]);
-//   const [openDialog, setOpenDialog] = useState(false);
-//   const [selectedDate, setSelectedDate] = useState(null);
-//   const [coins, setCoins] = useState("");
-
-//   useEffect(() => {
-//     fetchCheckIns();
-//   }, []);
-
-//   const fetchCheckIns = () => {
-//     axios
-//       .get("http://localhost:8080/api/coins")
-//       .then((response) => setCheckIns(response.data))
-//       .catch((error) => console.error("Error fetching check-ins:", error));
-//   };
-
-//   const handleOpenDialog = (date) => {
-//     setSelectedDate(date);
-//     const formattedDate = date.toISOString().split("T")[0];
-//     const existingCheckIn = checkIns.find((item) => item.date === formattedDate);
-//     if (existingCheckIn) {
-//       setCoins(existingCheckIn.coins);
-//     } else {
-//       setCoins("");
-//     }
-//     setOpenDialog(true);
-//   };
-
-//   const handleSubmit = () => {
-//     if (!coins) return;
-//     const formattedDate = selectedDate.toISOString().split("T")[0];
-//     const existingCheckIn = checkIns.find((item) => item.date === formattedDate);
-    
-//     if (existingCheckIn) {
-//       if (!window.confirm("Coins already added for this date. Do you want to update it?")) {
-//         return;
-//       }
-//       axios
-//         .put(`http://localhost:8080/api/coins/${existingCheckIn.id}`, { date: formattedDate, coins })
-//         .then(() => {
-//           setSnackbarOpen(true);
-//           fetchCheckIns();
-//         })
-//         .catch((error) => console.error("Error updating check-in:", error));
-//     } else {
-//       axios
-//         .post("http://localhost:8080/api/coins", { date: formattedDate, coins })
-//         .then(() => {
-//           setSnackbarOpen(true);
-//           fetchCheckIns();
-//         })
-//         .catch((error) => console.error("Error adding check-in:", error));
-//     }
-//     setOpenDialog(false);
-//     setCoins("");
-//   };
-
-//   const tileContent = ({ date, view }) => {
-//     if (view === "month") {
-//       const formattedDate = date.toISOString().split("T")[0];
-//       const checkIn = checkIns.find((item) => item.date === formattedDate);
-//       return checkIn ? <div className="checked-in">💰 {checkIn.coins}</div> : null;
-//     }
-//   };
-
-//   return (
-//     <Container maxWidth="sm">
-//       <Paper elevation={3} sx={{ padding: 3, mt: 5, borderRadius: 2 }}>
-//         <Typography variant="h5" gutterBottom>
-//           Daily Check-in Calendar
-//         </Typography>
-//         <Calendar onClickDay={handleOpenDialog} value={date} tileContent={tileContent} />
-//       </Paper>
-
-//       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-//         <DialogTitle>Enter Coins</DialogTitle>
-//         <DialogContent>
-//           <TextField
-//             label="Coins"
-//             type="number"
-//             value={coins}
-//             onChange={(e) => setCoins(e.target.value)}
-//             required
-//             fullWidth
-//             margin="dense"
-//           />
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={() => setOpenDialog(false)} color="secondary">Cancel</Button>
-//           <Button onClick={handleSubmit} color="primary" variant="contained">Submit</Button>
-//         </DialogActions>
-//       </Dialog>
-
-//       <Snackbar
-//         open={snackbarOpen}
-//         autoHideDuration={3000}
-//         onClose={() => setSnackbarOpen(false)}
-//         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-//       >
-//         <Alert severity="success" onClose={() => setSnackbarOpen(false)}>
-//           Check-in {checkIns.find((item) => item.date === selectedDate?.toISOString().split("T")[0]) ? "updated" : "added"} successfully!
-//         </Alert>
-//       </Snackbar>
-//     </Container>
-//   );
-// }
-
-// export default AddCoinForm;

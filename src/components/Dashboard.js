@@ -63,6 +63,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Grid, Card, CardContent, Typography, LinearProgress, Box } from "@mui/material";
 import axios from "axios";
+import api from "../api"; 
 
 const Dashboard = () => {
   const [coins, setCoins] = useState(0);
@@ -70,7 +71,7 @@ const Dashboard = () => {
   const totalCoinsGoal = 600000; // Example goal
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/coins")
+    api.get(`/api/coins`)
       .then(response => {
         const total = response.data.reduce((acc, coin) => acc + coin.coins, 0);
         setCoins(total);

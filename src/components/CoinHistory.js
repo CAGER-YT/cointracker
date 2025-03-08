@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api"; 
 import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
 function CoinHistory() {
   const [coinHistory, setCoinHistory] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/coins")
+    api.get('/api/coins')
       .then(response => setCoinHistory(response.data))
       .catch(error => console.error("Error fetching history:", error));
   }, []);
