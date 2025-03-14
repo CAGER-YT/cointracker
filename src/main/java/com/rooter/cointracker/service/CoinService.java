@@ -1,30 +1,40 @@
 package com.rooter.cointracker.service;
 
 import com.rooter.cointracker.model.Coin;
+import com.rooter.cointracker.model.User;
 import com.rooter.cointracker.repository.CoinRepository;
+import com.rooter.cointracker.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CoinService {
-    private final CoinRepository coinRepository;
+    @Autowired
+    private CoinRepository coinRepository;
 
-    public CoinService(CoinRepository coinRepository) {
-        this.coinRepository = coinRepository;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     public Coin addCoins(Coin coin) {
+        User user = getCurrentUser();
+        coin.setUser(user);
         return coinRepository.save(coin);
     }
 
     public List<Coin> getAllCoins() {
-        return coinRepository.findAll();
+        User user = getCurrentUser();
+        return coinRepository.findByUser(user);
     }
 
     public List<Coin> getCoinsByDate(LocalDate date) {
-        return coinRepository.findByDate(date);
+        User user = getCurrentUser();
+        return coinRepository.findByDateAndUser(date, user);
     }
 
     public Coin updateCoins(Long id, Coin updatedCoin) {
@@ -38,5 +48,9 @@ public class CoinService {
         }
     }
 
+    private User getCurrentUser() {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return userRepository.findByUsername(username);
+    }
 }
 

@@ -16,4 +16,8 @@ public class Coin {
     private LocalDate date;
     @Column(nullable = true)
     private String response;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

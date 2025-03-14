@@ -2,8 +2,12 @@ package com.rooter.cointracker.service;
 
 import com.rooter.cointracker.model.Coin;
 import com.rooter.cointracker.repository.CoinRepository;
+import com.rooter.cointracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.rooter.cointracker.model.User;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
@@ -11,7 +15,10 @@ import java.time.LocalDate;
 public class ReminderScheduler {
 
     @Autowired
-    private CoinRepository coinsRepository;
+    private CoinRepository coinRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EmailService emailService;
@@ -22,10 +29,21 @@ public class ReminderScheduler {
         LocalDate today = LocalDate.now();
 
         // Check if you've already replied "YES" today
-        Coin checkIn = coinsRepository.findTodayCheckIn(today);
+        User user = getCurrentUser();
+        Coin checkIn = coinRepository.findTodayCheckIn(today, user);
 
         if (checkIn == null) {
             emailService.sendCheckInReminder();
         }
+    }
+
+    @Scheduled(fixedRate = 1800000)
+    public void checkEmailReplies() {
+        // ...existing code...
+    }
+
+    private User getCurrentUser() {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return userRepository.findByUsername(username);
     }
 }
