@@ -68,7 +68,7 @@ import api from "../api";
 const Dashboard = () => {
   const [coins, setCoins] = useState(0);
   const [averageDailyEarnings, setAverageDailyEarnings] = useState(1000); // Example default daily rate
-  const totalCoinsGoal = 600000; // Example goal
+  const totalCoinsGoal = 1000000; // Example goal
 
   useEffect(() => {
     api.get(`/api/coins`)

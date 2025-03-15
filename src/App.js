@@ -5,15 +5,63 @@ import Dashboard from "./components/Dashboard";
 import AddCoinForm from "./components/AddCoinForm";
 import CoinHistory from "./components/CoinHistory";
 import Header from "./components/Header";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import PrivateRoute from "./components/PrivateRoute";
+import NotificationPreferences from "./components/NotificationPreferences";
+import AdminDashboard from "./components/AdminDashboard";
 
 const App = () => {
   return (
     <Router>
-      <Header />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/add" element={<AddCoinForm />} />
-        <Route path="/history" element={<CoinHistory />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Header />
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add"
+          element={
+            <PrivateRoute>
+              <Header />
+              <AddCoinForm />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <PrivateRoute>
+              <Header />
+              <CoinHistory />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <PrivateRoute>
+              <Header />
+              <NotificationPreferences />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <Header />
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );
