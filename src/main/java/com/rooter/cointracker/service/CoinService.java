@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,19 +23,24 @@ public class CoinService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(CoinService.class);
+
     public Coin addCoins(Coin coin) {
         User user = getCurrentUser();
         coin.setUser(user);
+        logger.info("Adding coins for user: {}", user.getUsername());
         return coinRepository.save(coin);
     }
 
     public List<Coin> getAllCoins() {
         User user = getCurrentUser();
+        logger.info("Fetching all coins for user: {}", user.getUsername());
         return coinRepository.findByUser(user);
     }
 
     public List<Coin> getCoinsByDate(LocalDate date) {
         User user = getCurrentUser();
+        logger.info("Fetching coins by date: {} for user: {}", date, user.getUsername());
         return coinRepository.findByDateAndUser(date, user);
     }
 
@@ -42,15 +49,18 @@ public class CoinService {
         if (existingCoin.isPresent()) {
             Coin coinToUpdate = existingCoin.get();
             coinToUpdate.setCoins(updatedCoin.getCoins());
+            logger.info("Updating coins for id: {}", id);
             return coinRepository.save(coinToUpdate);
         } else {
+            logger.error("Coin entry not found for ID: {}", id);
             throw new RuntimeException("Coin entry not found for ID: " + id);
         }
     }
 
     private User getCurrentUser() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        return userRepository.findByUsername(username);
+        logger.debug("Fetching current user: {}", username);
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 }
 

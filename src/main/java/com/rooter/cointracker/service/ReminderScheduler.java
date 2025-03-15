@@ -9,7 +9,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ReminderScheduler {
@@ -23,17 +27,20 @@ public class ReminderScheduler {
     @Autowired
     private EmailService emailService;
 
+    private static final Logger logger = LoggerFactory.getLogger(ReminderScheduler.class);
+
     // Runs daily at 10 AM
     @Scheduled(cron = "0 0 10 * * ?")
     public void sendCheckInReminder() {
         LocalDate today = LocalDate.now();
+        List<User> users = userRepository.findAll();
 
-        // Check if you've already replied "YES" today
-        User user = getCurrentUser();
-        Coin checkIn = coinRepository.findTodayCheckIn(today, user);
-
-        if (checkIn == null) {
-            emailService.sendCheckInReminder();
+        for (User user : users) {
+            Coin checkIn = coinRepository.findTodayCheckIn(today, user);
+            if (checkIn == null) {
+                emailService.sendCheckInReminder(user);
+                logger.info("Sent check-in reminder email to user: {}", user.getUsername());
+            }
         }
     }
 
@@ -44,6 +51,7 @@ public class ReminderScheduler {
 
     private User getCurrentUser() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        logger.debug("Fetching current user: {}", username);
         return userRepository.findByUsername(username);
     }
 }

@@ -7,6 +7,9 @@ import jakarta.mail.search.FlagTerm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.util.Properties;
 
@@ -15,6 +18,8 @@ public class EmailReplyListener {
 
     @Autowired
     private CoinRepository coinsRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailReplyListener.class);
 
     // Runs every 30 minutes to check for replies
     @Scheduled(fixedRate = 1800000)
@@ -46,6 +51,7 @@ public class EmailReplyListener {
                         coins.setResponse("YES");
                         coins.setDate(LocalDate.now());
                         coinsRepository.save(coins);
+                        logger.info("Updated coin response to 'YES' for date: {}", LocalDate.now());
                     }
                 }
                 message.setFlag(Flags.Flag.SEEN, true);
@@ -54,7 +60,7 @@ public class EmailReplyListener {
             inbox.close(false);
             store.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error checking email replies", e);
         }
     }
 }
