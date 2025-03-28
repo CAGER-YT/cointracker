@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/admin")
@@ -20,6 +22,12 @@ public class AdminController {
 
     @Autowired
     private BackupRestoreService backupRestoreService;
+
+    @GetMapping("/ping")
+    public String getPing() {
+        return "ping";
+    }
+    
 
     @GetMapping("/users")
     public List<User> getAllUsers() {

@@ -52,6 +52,6 @@ public class ReminderScheduler {
     private User getCurrentUser() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         logger.debug("Fetching current user: {}", username);
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 }
