@@ -9,6 +9,7 @@ const getEnvironment = () => {
   };
   
   const environment = getEnvironment();
+  console.log('Environment:', environment);
   
   const config = {
     development: {

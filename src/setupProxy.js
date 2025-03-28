@@ -6,6 +6,7 @@ module.exports = function(app) {
     createProxyMiddleware({
       target: 'https://q52dj2f4-8080.inc1.devtunnels.ms',
       changeOrigin: true,
+      ws: true, // Enable WebSocket proxying
     })
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import { Container, TextField, Button, Typography, Paper } from "@mui/material";
+import { Container, TextField, Button, Typography, Paper, Box } from "@mui/material";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -20,28 +20,38 @@ const Login = () => {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 3, mt: 5, borderRadius: 2 }}>
-        <Typography variant="h5" gutterBottom>
+      <Paper elevation={3} sx={{ padding: 4, mt: 8, borderRadius: 3 }}>
+        <Typography variant="h4" gutterBottom align="center">
           Login
         </Typography>
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <Button variant="contained" color="primary" onClick={handleLogin} sx={{ mt: 2 }}>
-          Login
-        </Button>
+        <Box component="form" noValidate autoComplete="off" sx={{ mt: 2 }}>
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLogin}
+            fullWidth
+            sx={{ mt: 3, py: 1.5 }}
+          >
+            Login
+          </Button>
+        </Box>
       </Paper>
     </Container>
   );
